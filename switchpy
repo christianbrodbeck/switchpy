@@ -2,11 +2,15 @@
 
 import os
 # import subprocess
+try:
+    input = raw_input
+except:
+    pass
 
 
 PATH = os.environ['PATH']
 paths = PATH.split(':')
-ppaths = filter(lambda x: 'python' in x.lower(), paths)
+ppaths = list(filter(lambda x: 'python' in x.lower(), paths))
 if len(ppaths) == 1:
     symlink_path = os.path.dirname(ppaths[0])
 elif len(ppaths) == 0:
@@ -30,6 +34,7 @@ py_paths = dict([  # all possible versions
                  ('2.7', '/Library/Frameworks/Python.framework/Versions/2.7'),
                  ('2.6', '/Library/Frameworks/Python.framework/Versions/2.6'),
                  ('3.2', '/Library/Frameworks/Python.framework/Versions/3.2'),
+                 ('3.3', '/Library/Frameworks/Python.framework/Versions/3.3'),
                  ('EPD-7.2', '/Library/Frameworks/Python.framework/Versions/7.2'),
                  ('EPD-7.3', '/Library/Frameworks/Python.framework/Versions/7.3'),
                  ('EPD64-7.2', '/Library/Frameworks/EPD64.framework/Versions/7.2'),
@@ -39,8 +44,8 @@ py_paths = dict([  # all possible versions
 def get_options():
     # search for available versions
     available = []
-    for label, path in py_paths.iteritems():
-        pypath = os.path.join(path, 'bin', 'python')
+    for label, path in py_paths.items():
+        pypath = os.path.join(path, 'Python')
         if os.path.exists(pypath):
             available.append(label)
 
@@ -90,13 +95,13 @@ def switchpy(version):
 
 if __name__ == '__main__':
     available = get_options()
-    inp = raw_input('select version: ')
+    inp = input('select version: ')
     if inp == '':
         pass
     else:
         try:
             version = available[int(inp)]
         except:
-            print "invalid input: %r; int required" % inp
+            print("invalid input: %r; int required" % inp)
         else:
             switchpy(version)
