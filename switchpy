@@ -10,7 +10,7 @@ except:
 
 PATH = os.environ['PATH']
 paths = PATH.split(':')
-ppaths = list(filter(lambda x: 'python' in x.lower(), paths))
+ppaths = tuple(filter(lambda x: 'python' in x.lower(), paths))
 if len(ppaths) == 1:
     symlink_path = os.path.dirname(ppaths[0])
 elif len(ppaths) == 0:
@@ -30,29 +30,35 @@ if not os.path.islink(symlink_path):
                     % (symlink_path, std_exception_msg))
 
 
-py_paths = dict([  # all possible versions
-                 ('2.7', '/Library/Frameworks/Python.framework/Versions/2.7'),
-                 ('2.6', '/Library/Frameworks/Python.framework/Versions/2.6'),
-                 ('3.2', '/Library/Frameworks/Python.framework/Versions/3.2'),
-                 ('3.3', '/Library/Frameworks/Python.framework/Versions/3.3'),
-                 ('EPD-7.2', '/Library/Frameworks/Python.framework/Versions/7.2'),
-                 ('EPD-7.3', '/Library/Frameworks/Python.framework/Versions/7.3'),
-                 ('EPD64-7.2', '/Library/Frameworks/EPD64.framework/Versions/7.2'),
-                 ('EPD64-7.3', '/Library/Frameworks/EPD64.framework/Versions/7.3'),
-                 ])
+def is_py_dir(directory):
+    ispy = (os.path.isdir(directory)
+            and not os.path.islink(directory)
+            and os.path.exists(os.path.join(directory, 'bin')))
+    return ispy
+
+py_paths = {}
+
+base = '/Library/Frameworks/Python.framework/Versions'
+for name in os.listdir(base):
+    full = os.path.join(base, name)
+    if is_py_dir(full):
+        if name.startswith('7'):
+            name = "EPD-" + name
+        py_paths[name] = full
+
+base = '/Library/Frameworks/EPD64.framework/Versions'
+for name in os.listdir(base):
+    full = os.path.join(base, name)
+    if is_py_dir(full):
+        py_paths["EPD-64-" + name] = full
+
 
 def get_options():
-    # search for available versions
-    available = []
-    for label, path in py_paths.items():
-        pypath = os.path.join(path, 'Python')
-        if os.path.exists(pypath):
-            available.append(label)
-
     # find the currently active version
     current_path = os.readlink(symlink_path)
     current_found = False
-    for i, label in enumerate(available):
+    labels = sorted(py_paths)
+    for i, label in enumerate(labels):
         path = py_paths[label]
         if path == current_path:
             prefix = '->%i  '
@@ -64,7 +70,7 @@ def get_options():
     if not current_found:
         print('current:  %r' % (current_path))
 
-    return available
+    return labels
 
 
 def switchpy(version):
