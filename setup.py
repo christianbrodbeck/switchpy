@@ -15,7 +15,10 @@ christianmbrodbeck@gmail.com
 
 '''
 
-from distutils.core import setup
+from distribute_setup import use_setuptools
+use_setuptools()
+
+from setuptools import setup
 
 setup(name='switchpy',
       version='0.2',
