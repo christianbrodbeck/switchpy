@@ -2,10 +2,16 @@
 
 import os
 # import subprocess
-try:
-    input = raw_input
+try:  # for Python 2.x
+    input = raw_input  # @ReservedAssignment
 except:
     pass
+
+
+__version__ = 1.1
+
+
+print("SwitchPy Version %s" % __version__)
 
 
 PATH = os.environ['PATH']
@@ -101,7 +107,7 @@ def switchpy(version):
 
 if __name__ == '__main__':
     available = get_options()
-    inp = input('select version: ')
+    inp = input('select distribution: ')
     if inp == '':
         pass
     else:
