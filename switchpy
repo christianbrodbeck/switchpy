@@ -16,7 +16,7 @@ if len(ppaths) == 1:
 elif len(ppaths) == 0:
     raise Exception("no symlink for python in PATH: %r" % PATH)
 else:
-    raise Exception("several python in path: %s" % ppaths)
+    raise Exception("several python in path: %s" % str(ppaths))
 
 # symlink_tgt_root = os.path.dirname(symlink_tgt)
 std_exception_msg = ("This script can most likely not be used on that "
