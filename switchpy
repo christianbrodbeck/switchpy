@@ -8,7 +8,7 @@ except:
     pass
 
 
-__version__ = '1.1.1'
+__version__ = '1.2'
 
 
 print("SwitchPy Version %s" % __version__)
@@ -25,14 +25,14 @@ elif len(ppaths) == 0:
 else:
     raise Exception("several python in path: %s" % ', '.join(ppaths))
 
+symlink_path = os.path.expanduser(symlink_path)
+symlink_path = os.path.expandvars(symlink_path)
+
 # symlink_tgt_root = os.path.dirname(symlink_tgt)
 std_exception_msg = ("This script can most likely not be used on that "
                      "platform. It was written for Mac OS X, with python.org"
                      " and EPD installations.")
-if not os.path.exists(symlink_path):
-    raise Exception("the default symlink location not exist (%r). %s"
-                    % (symlink_path, std_exception_msg))
-if not os.path.islink(symlink_path):
+if os.path.exists(symlink_path) and not os.path.islink(symlink_path):
     raise Exception("the default symlink path is not a symlink (%r). %s"
                     % (symlink_path, std_exception_msg))
 
@@ -62,7 +62,11 @@ for name in os.listdir(base):
 
 def get_options():
     # find the currently active version
-    current_path = os.readlink(symlink_path)
+    if os.path.exists(symlink_path):
+        current_path = os.readlink(symlink_path)
+    else:
+        current_path = None
+
     current_found = False
     labels = sorted(py_paths)
     for i, label in enumerate(labels):
@@ -81,7 +85,11 @@ def get_options():
 
 
 def switchpy(version):
-    current = os.readlink(symlink_path)
+    if os.path.exists(symlink_path):
+        current = os.readlink(symlink_path)
+    else:
+        current = None
+
     if version in py_paths:
         new_dest = py_paths[version]
         if new_dest == current:
@@ -93,8 +101,9 @@ def switchpy(version):
 
 #            returncode = subprocess.call(["/usr/bin/sudo", cmd])
 
-            print("removing old symlink")
-            os.remove(symlink_path)
+            if os.path.exists(symlink_path):
+                print("removing old symlink")
+                os.remove(symlink_path)
             print("creating new symlink")
             os.symlink(new_dest, symlink_path)
         return True

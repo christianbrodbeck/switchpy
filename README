@@ -1,40 +1,19 @@
-New (EPD readme)
-================
+Switchpy
+========
 
-do this::
-
-    $ sudo ln -fhs /Library/Frameworks/Python.framework/Versions/7.2 /Library/Frameworks/Python.framework/Versions/Current
-
-and check .bash_profile for path definition (it should add .../Versions/Current)
-
-
-Old
-===
-
-Apparently ``/usr/bin/python`` calls ``/usr/bin/pythonXXX`` where XXX reflects
-the version (e.g., 2.7), probably depending on OS-X settings? The settings can
-be modified with::
-
-    $ defaults write com.apple.versioner.python Version 2.6
+Use a symlink folder to switch between different Python distributions. Switchpy
+looks for a directory containing the word "python" in the PATH. It then creates
+a symlink at that location to a chosen  Python distribution. If the Symlink 
+location is in a write protected folder switchpy needs to be run with sudo. 
 
 
+Installing
+==========
 
+Install using 
 
-it is posible to just point the path to a desired python distriution, e.g.::
+    $ sudo python setup.py install
 
-    PATH="/Library/Frameworks/Python.framework/Versions/7.2/bin:${PATH}" # EPD 32
-    export PATH
+Run using
 
-but virtualenv (which seems to use bin/python) does not work with that. It
-looks (supposedly) at: /usr/local/bin/python
-
-
-    $ cd /usr/local/bin
-    /usr/local/bin$ ls -l python*
-
-
-
----
-virtualenv -p /usr/bin/python2.6
-
-
+    $ switchpy
